@@ -1,0 +1,19 @@
+- hosts: localhost
+  vars:
+
+  pre_tasks:
+  - name: Update Apt
+    become: true
+    ignore_errors: true
+    apt:
+      force_apt_get: true
+      update_cache: true
+      state: present
+
+  tasks:
+    - include_tasks: tasks/core.yml
+    # - include_tasks: tasks/oh-my-zsh.yml
+    # - include_tasks: tasks/dotnet.yml
+    - include_tasks: tasks/neovim.yml
+    # - include_tasks: tasks/git-config.yml
+    - include_tasks: tasks/netcoredbg.yml

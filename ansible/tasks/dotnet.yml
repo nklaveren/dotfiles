@@ -1,0 +1,13 @@
+- name: Setup dotnet sdks
+  become: true
+  script: ../scripts/setup-dotnet.sh
+
+- name: Install dotnet sdk's
+  become: true
+  apt:
+    force_apt_get: true
+    update_cache: true
+    state: present
+    name:
+    - dotnet-sdk-7.0
+    - dotnet-sdk-8.0

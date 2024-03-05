@@ -1,0 +1,10 @@
+- name: Install netcoredbg
+  shell: |
+    wget https://github.com/Samsung/netcoredbg/releases/download/3.0.0-1012/netcoredbg-linux-amd64.tar.gz &&
+    tar -xvf netcoredbg-linux-amd64.tar.gz && rm -rf netcoredbg-linux-amd64.tar.gz &&
+    chmod +x netcoredbg/* &&
+    cd ../bin &&
+    ln -sfn ../share/netcoredbg/netcoredbg netcoredbg
+
+  args:
+    chdir: ~/.local/share

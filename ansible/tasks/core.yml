@@ -1,0 +1,12 @@
+- name: Install apt packages
+  become: true
+  apt:
+    name:
+    - git
+    - zsh
+    # prerequisites for neovim
+    - ninja-build 
+    - gettext 
+    - cmake 
+    - unzip 
+    - curl

@@ -1,0 +1,24 @@
+- name: Cloning Neovim repo
+  shell: git clone https://github.com/neovim/neovim.git neovim
+  args:
+    chdir: ~/repos/
+    creates: ~/repos/neovim 
+
+
+- name: Updating Neovim repo
+  shell: git pull
+  args:
+    chdir: ~/repos/neovim
+
+- name: Build Neovim
+  make:
+    chdir: ~/repos/neovim
+    params:
+      CMAKE_BUILD_TYPE: RelWithDebInfo
+
+
+- name: Install Neovim
+  become: true
+  make:
+    chdir: ~/repos/neovim
+    target: install
