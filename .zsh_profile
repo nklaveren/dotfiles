@@ -1,5 +1,5 @@
 #env variables
-# VIM="nvim"
+ VIM="nvim"
 
 export PATH=$DOTFILES/scripts:$PATH
 export PATH=/opt/cisco/anyconnect/bin:$PATH
@@ -9,7 +9,7 @@ export DOTNET_ROOT=/usr/share/dotnet
 export PATH=$DOTNET_ROOT:$PATH
 
 #aliases
-# alias vim=$VIM
+alias vim=$VIM
 
 plugins=(git)
 
@@ -35,15 +35,13 @@ _dotnet_zsh_complete()
 {
   local completions=("$(dotnet complete "$words")")
 
-  # If the completion list is empty, just continue with filename selection
   if [ -z "$completions" ]
   then
     _arguments '*::arguments: _normal'
     return
   fi
 
-  # This is not a variable assignment, don't remove spaces!
-  _values = "${(ps:\n:)completions}"
+  _values = "${(ps:\n:)completions}".split("\n")
 }
 
 compdef _dotnet_zsh_complete dotnet

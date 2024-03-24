@@ -2,13 +2,13 @@
   vars:
 
   pre_tasks:
-  - name: Update Apt
-    become: true
-    ignore_errors: true
-    apt:
-      force_apt_get: true
-      update_cache: true
-      state: present
+    - name: Update Apt
+      become: true
+      ignore_errors: true
+      apt:
+        force_apt_get: true
+        update_cache: true
+        state: present
 
   tasks:
     - include_tasks: tasks/core.yml

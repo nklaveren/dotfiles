@@ -5,7 +5,7 @@ export ZSH="$HOME/.oh-my-zsh"
 export DOTFILES=$HOME/repos/dotfiles
 
 
-ZSH_THEME="nige"
+ZSH_THEME="my"
 
 unsetopt BEEP
 

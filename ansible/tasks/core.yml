@@ -2,11 +2,14 @@
   become: true
   apt:
     name:
-    - git
-    - zsh
-    # prerequisites for neovim
-    - ninja-build 
-    - gettext 
-    - cmake 
-    - unzip 
-    - curl
+      - git
+      - zsh
+      # prerequisites for neovim
+      - ninja-build
+      - gettext
+      - cmake
+      - make
+      - unzip
+      - curl
+      - lsb-release
+      - ca-certificates

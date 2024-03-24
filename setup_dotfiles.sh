@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wd=`pwd`
+wd=$(pwd)
 
 mkdir -p ~/.config
 
@@ -10,7 +10,7 @@ ln -sfn $wd/.zsh_profile ~/.zsh_profile
 ln -sfn $wd/.zshrc ~/.zshrc
 
 #oh-my-zsh
-ln -sfn $wd/nige.zsh-theme ~/.oh-my-zsh/custom/themes/nige.zsh-theme
+ln -sfn $wd/my.zsh-theme ~/.oh-my-zsh/custom/themes/my.zsh-theme
 
 # Neovim
 ln -sfn $wd/nvim ~/.config/nvim
