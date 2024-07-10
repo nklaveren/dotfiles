@@ -1,6 +1,4 @@
 #env variables
- VIM="nvim"
-
 export PATH=$DOTFILES/scripts:$PATH
 export PATH=/opt/cisco/anyconnect/bin:$PATH
 export PATH=$HOME/.dotnet/tools:$PATH
@@ -9,11 +7,13 @@ export DOTNET_ROOT=/usr/share/dotnet
 export PATH=$DOTNET_ROOT:$PATH
 
 #aliases
-alias vim=$VIM
-
 plugins=(git)
 
 alias repos="cd ~/repos/"
+alias icatu="cd ~/repos/icatu/"
+alias planetun="cd ~/repos/planetun/"
+alias dc="cd ~/repos/dc/"
+
 alias myip="curl http://ipecho.net/plain; echo"
 
 export CHROME_BIN="\"/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\""
@@ -35,13 +35,15 @@ _dotnet_zsh_complete()
 {
   local completions=("$(dotnet complete "$words")")
 
+  # If the completion list is empty, just continue with filename selection
   if [ -z "$completions" ]
   then
     _arguments '*::arguments: _normal'
     return
   fi
 
-  _values = "${(ps:\n:)completions}".split("\n")
+  # This is not a variable assignment, don't remove spaces!
+  _values = "${(ps:\n:)completions}"
 }
 
 compdef _dotnet_zsh_complete dotnet
