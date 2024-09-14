@@ -17,3 +17,4 @@
     - include_tasks: tasks/neovim.yml
     # - include_tasks: tasks/git-config.yml
     - include_tasks: tasks/netcoredbg.yml
+    - include_tasks: tasks/ollama.yml
