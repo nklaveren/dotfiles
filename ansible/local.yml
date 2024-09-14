@@ -15,3 +15,9 @@
     # Existing tasks would go here, but for now, let's focus on adding the Ollama installation task.
     - name: Install Ollama
       include_tasks: tasks/ollama.yml
+    - include_tasks: tasks/core.yml
+    # - include_tasks: tasks/oh-my-zsh.yml
+    # - include_tasks: tasks/dotnet.yml
+    - include_tasks: tasks/neovim.yml
+    # - include_tasks: tasks/git-config.yml
+    - include_tasks: tasks/netcoredbg.yml
