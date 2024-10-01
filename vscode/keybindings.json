@@ -1,0 +1,117 @@
+[
+  // NAVIGATION
+  {
+    "key": "alt+a",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+b",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+k",
+    "command": "workbench.action.terminal.split",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+j",
+    "command": "workbench.action.togglePanel"
+  },
+  {
+    "key": "alt+n",
+    "command": "workbench.action.terminal.new",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+w",
+    "command": "workbench.action.terminal.kill",
+    "when": "terminalFocus"
+  },
+  // FILE TREE
+  {
+    "command": "workbench.action.focusLastEditorGroup",
+    "key": "ctrl+e"
+  },
+  {
+    "command": "workbench.action.focusRightBar",
+    "key": "ctrl+t"
+  },
+  {
+    "command": "workbench.files.action.focusFilesExplorer",
+    "key": "ctrl+e",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "n",
+    "command": "explorer.newFile",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
+    "command": "renameFile",
+    "key": "r",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
+    "key": "shift+n",
+    "command": "explorer.newFolder",
+    "when": "explorerViewletFocus"
+  },
+  {
+    "command": "deleteFile",
+    "key": "d",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  // EXTRA
+  {
+    "key": "ctrl+shift+5",
+    "command": "editor.emmet.action.matchTag"
+  },
+  {
+    "key": "ctrl+z",
+    "command": "undo"
+  },
+  {
+    "key": "ctrl+e",
+    "command": "-workbench.action.quickOpen"
+  },
+  {
+    "key": "ctrl+;",
+    "command": "-editor.action.addCommentLine",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+oem_2",
+    "command": "-editor.action.accessibleViewAcceptInlineCompletion",
+    "when": "accessibleViewIsShown && accessibleViewCurrentProviderId == 'inlineCompletions'"
+  },
+  {
+    "key": "ctrl+oem_2",
+    "command": "-github.copilot.acceptCursorPanelSolution",
+    "when": "github.copilot.activated && github.copilot.panelVisible"
+  },
+  {
+    "key": "alt+1",
+    "command": "workbench.view.testing.focus",
+  },
+  {
+    "key": "alt+2",
+    "command": "continue.continueGUIView.focus"
+  },
+  {
+    "key": "alt+n",
+    "command": "continue.focusContinueInputWithoutClear",
+    "when": "continue.continueGUIView.active"
+  },
+  {
+    "key": "alt+m",
+    "command": "claude-dev.historyButtonTapped",
+    "when": "claude-dev.SidebarProvider.active"
+  },
+  {
+    "key": "alt+b",
+    "command": "claude-dev.settingsButtonTapped",
+    "when": "claude-dev.SidebarProvider.active"
+  }
+]

@@ -1,4 +1,5 @@
-#env variables
+# Environment Variables
+export PATH=$PATH:/usr/local/go/bin
 export PATH=$DOTFILES/scripts:$PATH
 export PATH=/opt/cisco/anyconnect/bin:$PATH
 export PATH=$HOME/.dotnet/tools:$PATH
@@ -6,52 +7,46 @@ export PATH=$HOME/.dotnet/tools:$PATH
 export DOTNET_ROOT=/usr/share/dotnet
 export PATH=$DOTNET_ROOT:$PATH
 
-#aliases
+export JAVA_HOME=/usr/local/jdk-21.0.1
+export PATH=$PATH:$JAVA_HOME/bin
+export GATLING_HOME=~/gatling
+
+export OLLAMA_API_BASE=http://127.0.0.1:11434
+
+# Aliases
 plugins=(git)
 
 alias repos="cd ~/repos/"
 alias icatu="cd ~/repos/icatu/"
-alias planetun="cd ~/repos/planetun/"
 alias dc="cd ~/repos/dc/"
-
+alias dreamdev="cd ~/dreamdev/"
+alias dotfiles="cd ~/repos/dotfiles/"
 alias myip="curl http://ipecho.net/plain; echo"
 
-export CHROME_BIN="\"/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\""
+export CHROME_BIN='"/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"'
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # Load nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Load nvm bash completion
 
 for file in ~/.zsh_functions/*.zsh; do
     source $file
 done
 
-export ACR_NAME="nklaveren"
-
 export DOTNET_ROOT=$HOME/.dotnet
 export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
 
-_dotnet_zsh_complete()
-{
-  local completions=("$(dotnet complete "$words")")
+_dotnet_zsh_complete() {
+  local completions=($(dotnet complete "$words"))
 
-  # If the completion list is empty, just continue with filename selection
-  if [ -z "$completions" ]
-  then
+  if [ -z "$completions" ]; then
     _arguments '*::arguments: _normal'
     return
   fi
 
-  # This is not a variable assignment, don't remove spaces!
-  _values = "${(ps:\n:)completions}"
+  _values="${(ps:\n:)completions}"
 }
 
 compdef _dotnet_zsh_complete dotnet
 
 . "$HOME/.cargo/env"
-
-export PATH=$PATH:/usr/local/go/bin
-export JAVA_HOME=/usr/local/jdk-21.0.1
-export PATH=$PATH:$JAVA_HOME/bin
-
-export GATLING_HOME=~/gatling
