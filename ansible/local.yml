@@ -1,6 +1,11 @@
-- hosts: localhost
+- name: Local
+  hosts: local
   vars:
-    # Any variables defined here would go under 'vars:'
+    user: "nklaveren"
+    user_win: "nklav"
+    git_user: "Nicolas Van Klaveren"
+    git_email: "nklaveren@gmail.com"
+    editor: "Code"
 
   pre_tasks:
     - name: Update Apt
@@ -12,12 +17,9 @@
         state: present
 
   tasks:
-    # Existing tasks would go here, but for now, let's focus on adding the Ollama installation task.
-    - name: Install Ollama
-      include_tasks: tasks/ollama.yml
     - include_tasks: tasks/core.yml
-    # - include_tasks: tasks/oh-my-zsh.yml
-    # - include_tasks: tasks/dotnet.yml
-    - include_tasks: tasks/neovim.yml
-    # - include_tasks: tasks/git-config.yml
+    - include_tasks: tasks/oh-my-zsh.yml
+    - include_tasks: tasks/dotnet.yml
+    - include_tasks: tasks/git-config.yml
     - include_tasks: tasks/netcoredbg.yml
+    - include_tasks: tasks/nvm.yml

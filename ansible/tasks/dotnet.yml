@@ -9,5 +9,4 @@
     update_cache: true
     state: present
     name:
-    - dotnet-sdk-7.0
     - dotnet-sdk-8.0

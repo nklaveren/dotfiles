@@ -1,0 +1,2 @@
+- name: Post Install
+  script: scripts/pos-install-script.sh

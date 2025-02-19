@@ -1,1 +1,3 @@
-ansible-playbook local.yml -i inventory -K
+#!/bin/bash
+
+ansible-playbook ansible/local.yml -i ansible/inventory.ini -K

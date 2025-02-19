@@ -7,19 +7,16 @@ export PATH=$HOME/.dotnet/tools:$PATH
 export DOTNET_ROOT=/usr/share/dotnet
 export PATH=$DOTNET_ROOT:$PATH
 
-export JAVA_HOME=/usr/local/jdk-21.0.1
-export PATH=$PATH:$JAVA_HOME/bin
-export GATLING_HOME=~/gatling
 
-export OLLAMA_API_BASE=http://127.0.0.1:11434
-
+if [ -f $DOTFILES/.passwords.envs ]
+then
+  export $(cat $DOTFILES/.passwords.envs | xargs)
+fi
 # Aliases
 plugins=(git)
 
 alias repos="cd ~/repos/"
-alias icatu="cd ~/repos/icatu/"
-alias dc="cd ~/repos/dc/"
-alias dreamdev="cd ~/dreamdev/"
+
 alias dotfiles="cd ~/repos/dotfiles/"
 alias myip="curl http://ipecho.net/plain; echo"
 
@@ -48,5 +45,3 @@ _dotnet_zsh_complete() {
 }
 
 compdef _dotnet_zsh_complete dotnet
-
-. "$HOME/.cargo/env"

@@ -2,4 +2,22 @@
   shell: |
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
   args:
-    creates: /home/nige/.oh-my-zsh
+    creates: /home/{{ user }}/.oh-my-zsh
+
+- name: Install oh-my-zsh plugins
+  shell: |
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-/home/{{ user }}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  args:
+    creates: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  
+- name: Install oh-my-zsh syntax highlighting
+  shell: |
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-/home/{{ user }}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+  args:
+    creates: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+
+- name: Install oh-my-zsh zsh-bat
+  shell: |
+    git clone https://github.com/fdellwing/zsh-bat.git ${ZSH_CUSTOM:-/home/{{ user }}/.oh-my-zsh/custom}/plugins/zsh-bat
+  args:
+    creates: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-bat

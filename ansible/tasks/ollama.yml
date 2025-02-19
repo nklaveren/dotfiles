@@ -1,3 +1,0 @@
-- name: Install Ollama using the installation script from their website
-  command: |
-    curl -fsSL https://ollama.com/install.sh | sh

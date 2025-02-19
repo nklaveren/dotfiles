@@ -2,22 +2,16 @@
   git_config:
     name: user.name
     scope: global
-    value: "Nicolas Van Klaveren"
+    value: "{{ git_user }}"
 
 - name: Git email (personal)
   git_config:
     name: user.email
     scope: global
-    value: "nklaveren@gmail.com"
+    value: "{{ git_email }}"
 
 - name: Git editor
   git_config:
     name: core.editor
     scope: global
-    value: nvim
-
-- name: Git l alias
-  git_config:
-    name: alias.l
-    scope: global
-    value: log --oneline -10
+    value: "{{ editor }}"

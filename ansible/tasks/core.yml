@@ -4,12 +4,4 @@
     name:
       - git
       - zsh
-      # prerequisites for neovim
-      - ninja-build
-      - gettext
-      - cmake
-      - make
-      - unzip
       - curl
-      - lsb-release
-      - ca-certificates
