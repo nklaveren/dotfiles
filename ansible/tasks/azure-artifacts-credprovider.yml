@@ -1,0 +1,12 @@
+- name: Create .NET Tools directory
+  file:
+    path: "/home/{{ user }}/.dotnet/tools"
+    state: directory
+    mode: '0755'
+
+- name: Install Azure Artifacts Credential Provider
+  shell: |
+    curl -L https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.sh | bash
+
+  args:
+    creates: "/home/{{ user }}/.nuget/plugins/netcore" 

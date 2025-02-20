@@ -18,8 +18,10 @@
 
   tasks:
     - include_tasks: tasks/core.yml
+    - include_tasks: tasks/docker-engine.yml
     - include_tasks: tasks/oh-my-zsh.yml
     - include_tasks: tasks/dotnet.yml
+    - include_tasks: tasks/azure-artifacts-credprovider.yml
     - include_tasks: tasks/git-config.yml
-    - include_tasks: tasks/netcoredbg.yml
     - include_tasks: tasks/nvm.yml
+    # - include_tasks: tasks/netcoredbg.yml
