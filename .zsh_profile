@@ -26,10 +26,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # Load nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Load nvm bash completion
 
-for file in ~/.zsh_functions/*.zsh; do
-    source $file
-done
-
 export DOTNET_ROOT=$HOME/.dotnet
 export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools
 
