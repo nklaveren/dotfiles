@@ -1,6 +1,7 @@
 param ([switch]$Install, [switch]$Force)
 
 # PowerShell theme similar to my.zsh-theme
+# For PowerShell 7+, download from: https://github.com/PowerShell/PowerShell/releases
 # Place this file in one of the following locations:
 # Windows: ~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
 # Linux: ~/.config/powershell/Microsoft.PowerShell_profile.ps1
@@ -63,33 +64,25 @@ function prompt {
     
     # Current directory
     $currentDirName = Split-Path -Leaf -Path (Get-Location)
-    if ($currentDirName -like '*PS' -and $currentDirName.Length -gt 2) {
-        $currentDirName = $currentDirName.Substring(0, $currentDirName.Length - 2)
-    }
     $promptString += "$cyan$currentDirName$reset"
     
     # Git status (now returns a string, colors to be added within Get-GitStatus or here)
     $gitPromptPart = Get-GitStatus # This will be like " (branch) ✗" or " (branch)" or "", now pre-colored
-    # We need to colorize the parts of $gitPromptPart here if Get-GitStatus doesn't do it internally with ANSI codes
-    # For simplicity, let's assume Get-GitStatus will be further modified to include its own ANSI colors for branch, parens, and symbol.
-    # For now, let's just append it and color the whole git part yellow as a placeholder.
     if ($gitPromptPart) {
         $promptString += $gitPromptPart # No longer wrapping in $yellow...$reset
     }
 
-    $promptString += " > " # Add the greater-than sign and a space
-    
     # Restore the actual last exit code
     $LASTEXITCODE = $lastExitCode
+    
+    $promptString += " $([char]0x276F) " # Heavy right-pointing angle quotation mark ornament U+276F
     
     return $promptString
 }
 
-# Optional: Enable PSReadLine for better command line editing experience
 if (Get-Module -ListAvailable -Name PSReadLine) {
     Import-Module PSReadLine
     
-    # Check PSReadLine version for PredictionSource support (v2.1.0+)
     try {
         $psrlModule = Get-Module PSReadLine
         if ($psrlModule) {
@@ -97,11 +90,9 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
             $hasPredictionSupport = ($psrlVersion.Major -gt 2) -or (($psrlVersion.Major -eq 2) -and ($psrlVersion.Minor -ge 1))
             
             if ($hasPredictionSupport) {
-                # Only use PredictionSource if supported
                 Set-PSReadLineOption -PredictionSource History
             }
             
-            # Add InlinePrediction color only if supported
             if ($hasPredictionSupport) {
                 Set-PSReadLineOption -Colors @{ InlinePrediction = 'DarkGray' }
             }
@@ -110,7 +101,6 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
         Write-Host "Error checking PSReadLine version. Some features may be disabled." -ForegroundColor Yellow
     }
     
-    # Color settings work with most PSReadLine versions
     Set-PSReadLineOption -Colors @{
         Command            = 'Cyan'
         Parameter          = 'DarkCyan'
@@ -124,8 +114,6 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
     }
 }
 
-# Enable Vi mode for PSReadLine if desired
-# Set-PSReadLineOption -EditMode Vi
 
 # Functions for directory navigation (to be used as aliases)
 function Set-ReposLocation { Set-Location -Path "C:\repos" }
@@ -138,7 +126,7 @@ New-Alias -Name dotfiles -Value Set-DotfilesLocation -Force
 function Get-MyIP { 
     (Invoke-WebRequest -Uri 'http://ipecho.net/plain' -UseBasicParsing).Content 
 }
-New-Alias -Name myip -Value Get-MyIP
+New-Alias -Name myip -Value Get-MyIP -Force
 
 # Function to install this profile to the correct location
 function Install-PowerShellProfile {
