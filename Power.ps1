@@ -57,9 +57,9 @@ function prompt {
     
     # Arrow color based on last command success
     if ($?) {
-        $promptString += "$green$([char]0x279C)$reset " # Green Arrow ➜
+        $promptString += "$green$([char]0x279C) $reset " # Green Arrow ➜
     } else {
-        $promptString += "$red$([char]0x279C)$reset " # Red Arrow ➜
+        $promptString += "$red$([char]0x279C) $reset " # Red Arrow ➜
     }
     
     # Current directory
