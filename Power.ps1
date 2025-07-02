@@ -12,6 +12,12 @@ if (-not (Get-Module -ListAvailable -Name posh-git)) {
     Write-Host "Install-Module posh-git -Scope CurrentUser -Force" -ForegroundColor Cyan
 }
 
+# Check if GitHub Copilot CLI is installed, if not, suggest installing it
+if (-not (Get-Command gh -ErrorAction SilentlyContinue) -or -not (gh copilot --version 2>$null)) {
+    Write-Host "For GitHub Copilot CLI integration, ensure 'gh' is installed and then run:" -ForegroundColor Yellow
+    Write-Host "gh extension install github/gh-copilot" -ForegroundColor Cyan
+}
+
 # Function to get Git status using native PowerShell colors
 function Get-GitStatus {
     # ANSI Escape Codes
@@ -33,7 +39,8 @@ function Get-GitStatus {
                 }
             }
         }
-    } catch {
+    }
+    catch {
         # Not a git repository or other error
     }
     return $gitString
@@ -58,7 +65,8 @@ function prompt {
     # Arrow color based on last command success
     if ($?) {
         $promptString += "$green$([char]0x279C) $reset " # Green Arrow ➜
-    } else {
+    }
+    else {
         $promptString += "$red$([char]0x279C) $reset " # Red Arrow ➜
     }
     
@@ -97,20 +105,21 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
                 Set-PSReadLineOption -Colors @{ InlinePrediction = 'DarkGray' }
             }
         }
-    } catch {
+    }
+    catch {
         Write-Host "Error checking PSReadLine version. Some features may be disabled." -ForegroundColor Yellow
     }
     
     Set-PSReadLineOption -Colors @{
-        Command            = 'Cyan'
-        Parameter          = 'DarkCyan'
-        Operator           = 'DarkGray'
-        Variable           = 'Green'
-        String             = 'Yellow'
-        Number             = 'Magenta'
-        Member             = 'DarkGreen'
-        Type               = 'DarkYellow'
-        Comment            = 'DarkGray'
+        Command   = 'Cyan'
+        Parameter = 'DarkCyan'
+        Operator  = 'DarkGray'
+        Variable  = 'Green'
+        String    = 'Yellow'
+        Number    = 'Magenta'
+        Member    = 'DarkGreen'
+        Type      = 'DarkYellow'
+        Comment   = 'DarkGray'
     }
 }
 
@@ -118,15 +127,21 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
 # Functions for directory navigation (to be used as aliases)
 function Set-ReposLocation { Set-Location -Path "C:\repos" }
 function Set-DotfilesLocation { Set-Location -Path "C:\repos\dotfiles" }
+function Set-LastLinkLocation { Set-Location -Path "C:\lastlink" }
 
 # Add aliases based on the functions
 New-Alias -Name repos -Value Set-ReposLocation -Force
 New-Alias -Name dotfiles -Value Set-DotfilesLocation -Force
+New-Alias -Name last -Value Set-LastLinkLocation -Force
 
 function Get-MyIP { 
     (Invoke-WebRequest -Uri 'http://ipecho.net/plain' -UseBasicParsing).Content 
 }
 New-Alias -Name myip -Value Get-MyIP -Force
+
+# GitHub Copilot Aliases
+New-Alias -Name ?? -Value ghcs -Force
+New-Alias -Name ?! -Value ghce -Force
 
 # Function to install this profile to the correct location
 function Install-PowerShellProfile {
@@ -162,8 +177,104 @@ function Install-PowerShellProfile {
         Copy-Item -Path $scriptPath -Destination $profilePath -Force
         Write-Host "Profile successfully installed to: $profilePath" -ForegroundColor Green
         Write-Host "Restart PowerShell or run '. $profilePath' to apply changes" -ForegroundColor Cyan
-    } catch {
+    }
+    catch {
         Write-Host "Error installing profile: $_" -ForegroundColor Red
+    }
+}
+
+function ghcs {
+    # Debug support provided by common PowerShell function parameters, which is natively aliased as -d or -db
+    # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_commonparameters?view=powershell-7.4#-debug
+    param(
+        [Parameter()]
+        [string]$Hostname,
+
+        [ValidateSet('gh', 'git', 'shell')]
+        [Alias('t')]
+        [String]$Target = 'shell',
+
+        [Parameter(Position = 0, ValueFromRemainingArguments)]
+        [string]$Prompt
+    )
+    begin {
+        # Create temporary file to store potential command user wants to execute when exiting
+        $executeCommandFile = New-TemporaryFile
+
+        # Store original value of GH_* environment variable
+        $envGhDebug = $Env:GH_DEBUG
+        $envGhHost = $Env:GH_HOST
+    }
+    process {
+        if ($PSBoundParameters['Debug']) {
+            $Env:GH_DEBUG = 'api'
+        }
+
+        $Env:GH_HOST = $Hostname
+
+        gh copilot suggest -t $Target -s "$executeCommandFile" $Prompt
+    }
+    end {
+        # Execute command contained within temporary file if it is not empty
+        if ($executeCommandFile.Length -gt 0) {
+            # Extract command to execute from temporary file
+            $executeCommand = (Get-Content -Path $executeCommandFile -Raw).Trim()
+
+            # Insert command into PowerShell up/down arrow key history
+            [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory($executeCommand)
+
+            # Insert command into PowerShell history
+            $now = Get-Date
+            $executeCommandHistoryItem = [PSCustomObject]@{
+                CommandLine        = $executeCommand
+                ExecutionStatus    = [Management.Automation.Runspaces.PipelineState]::NotStarted
+                StartExecutionTime = $now
+                EndExecutionTime   = $now.AddSeconds(1)
+            }
+            Add-History -InputObject $executeCommandHistoryItem
+
+            # Execute command
+            Write-Host "`n"
+            Invoke-Expression $executeCommand
+        }
+    }
+    clean {
+        # Clean up temporary file used to store potential command user wants to execute when exiting
+        Remove-Item -Path $executeCommandFile
+
+        # Restore GH_* environment variables to their original value
+        $Env:GH_DEBUG = $envGhDebug
+    }
+}
+
+function ghce {
+    # Debug support provided by common PowerShell function parameters, which is natively aliased as -d or -db
+    # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_commonparameters?view=powershell-7.5#-debug
+    param(
+        [Parameter()]
+        [string]$Hostname,
+
+        [Parameter(Position = 0, ValueFromRemainingArguments)]
+        [string[]]$Prompt
+    )
+    begin {
+        # Store original value of GH_* environment variables
+        $envGhDebug = $Env:GH_DEBUG
+        $envGhHost = $Env:GH_HOST
+    }
+    process {
+        if ($PSBoundParameters['Debug']) {
+            $Env:GH_DEBUG = 'api'
+        }
+
+        $Env:GH_HOST = $Hostname
+
+        gh copilot explain $Prompt
+    }
+    clean {
+        # Restore GH_* environment variables to their original value
+        $Env:GH_DEBUG = $envGhDebug
+        $Env:GH_HOST = $envGhHost
     }
 }
 
