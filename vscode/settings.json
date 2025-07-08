@@ -294,5 +294,68 @@
   "notebook.cellFocusIndicator": "border",
   "notebook.stickyScroll.mode": "flat",
   "jupyter.interactiveWindow.textEditor.executeSelection": true,
-  "editor.minimap.enabled": false
+  "editor.minimap.enabled": false,
+  // GitHub Copilot customization settings
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.promptFiles": true,
+  "chat.promptFilesLocations": {
+    "C:/repos/dotfiles/prompts": true,
+    "prompts": true,
+    ".github/prompts": true
+  },
+  "chat.instructionsFilesLocations": {
+    "C:/repos/dotfiles/prompts": true,
+    "prompts": true,
+    ".github/instructions": true
+  },
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Always add meaningful comments for complex logic."
+    },
+    {
+      "text": "Use consistent naming conventions throughout the codebase."
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/general-coding.instructions.md"
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/typescript-react.instructions.md"
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/angular-best-practices.instructions.md"
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/javascript-best-practices.instructions.md"
+    }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    {
+      "text": "Generate comprehensive tests with good coverage."
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/testing-standards.instructions.md"
+    }
+  ],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit format: type(scope): description"
+    },
+    {
+      "text": "Keep commit messages concise but descriptive"
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/commit-standards.instructions.md"
+    }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    {
+      "text": "Focus on code quality, performance, and security issues."
+    },
+    {
+      "text": "Provide specific suggestions for improvement."
+    },
+    {
+      "file": "C:/repos/dotfiles/prompts/code-review.instructions.md"
+    }
+  ]
 }

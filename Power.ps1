@@ -123,21 +123,96 @@ if (Get-Module -ListAvailable -Name PSReadLine) {
     }
 }
 
+# Environment Variables
+$env:DOTFILES = "C:\repos\dotfiles"
+$env:PROMPTS = "$env:DOTFILES\prompts"
 
 # Functions for directory navigation (to be used as aliases)
 function Set-ReposLocation { Set-Location -Path "C:\repos" }
-function Set-DotfilesLocation { Set-Location -Path "C:\repos\dotfiles" }
+function Set-DotfilesLocation { Set-Location -Path $env:DOTFILES }
 function Set-LastLinkLocation { Set-Location -Path "C:\lastlink" }
+function Set-PromptsLocation { Set-Location -Path $env:PROMPTS }
 
 # Add aliases based on the functions
 New-Alias -Name repos -Value Set-ReposLocation -Force
 New-Alias -Name dotfiles -Value Set-DotfilesLocation -Force
+New-Alias -Name prompts -Value Set-PromptsLocation -Force
 New-Alias -Name last -Value Set-LastLinkLocation -Force
 
 function Get-MyIP { 
     (Invoke-WebRequest -Uri 'http://ipecho.net/plain' -UseBasicParsing).Content 
 }
 New-Alias -Name myip -Value Get-MyIP -Force
+
+# Prompt Management Functions
+function Get-PromptFiles {
+    Get-ChildItem -Path $env:PROMPTS -Filter "*.instructions.md" | Select-Object Name, LastWriteTime
+}
+
+function Edit-Prompt {
+    param([string]$PromptName)
+    
+    if (-not $PromptName) {
+        Write-Host "Available prompts:" -ForegroundColor Cyan
+        Get-PromptFiles | Format-Table -AutoSize
+        return
+    }
+    
+    $promptFile = "$env:PROMPTS\$PromptName.instructions.md"
+    if (Test-Path $promptFile) {
+        code $promptFile
+    } else {
+        Write-Host "Prompt file not found: $promptFile" -ForegroundColor Red
+        Write-Host "Available prompts:" -ForegroundColor Cyan
+        Get-PromptFiles | Format-Table -AutoSize
+    }
+}
+
+function New-Prompt {
+    param(
+        [Parameter(Mandatory)]
+        [string]$PromptName,
+        [string]$Description = "Custom coding instructions",
+        [string]$ApplyTo = "**"
+    )
+    
+    $promptFile = "$env:PROMPTS\$PromptName.instructions.md"
+    
+    if (Test-Path $promptFile) {
+        Write-Host "Prompt file already exists: $promptFile" -ForegroundColor Yellow
+        return
+    }
+    
+    $template = @"
+---
+applyTo: "$ApplyTo"
+description: "$Description"
+---
+# $PromptName Instructions
+
+## Overview
+Add your custom instructions here.
+
+## Best Practices
+- Add specific guidelines
+- Include code examples
+- Document conventions
+
+## Examples
+```
+// Add code examples here
+```
+"@
+    
+    $template | Out-File -FilePath $promptFile -Encoding UTF8
+    Write-Host "Created new prompt file: $promptFile" -ForegroundColor Green
+    code $promptFile
+}
+
+# Aliases for prompt management
+New-Alias -Name prompts-list -Value Get-PromptFiles -Force
+New-Alias -Name prompt-edit -Value Edit-Prompt -Force
+New-Alias -Name prompt-new -Value New-Prompt -Force
 
 # GitHub Copilot Aliases
 New-Alias -Name ?? -Value ghcs -Force
