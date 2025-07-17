@@ -161,7 +161,8 @@ function Edit-Prompt {
     $promptFile = "$env:PROMPTS\$PromptName.instructions.md"
     if (Test-Path $promptFile) {
         code $promptFile
-    } else {
+    }
+    else {
         Write-Host "Prompt file not found: $promptFile" -ForegroundColor Red
         Write-Host "Available prompts:" -ForegroundColor Cyan
         Get-PromptFiles | Format-Table -AutoSize
@@ -352,6 +353,122 @@ function ghce {
         $Env:GH_HOST = $envGhHost
     }
 }
+
+# MySQL to Excel Function
+function Invoke-MySqlToExcel {
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Query,
+        
+        [Alias("o")]
+        [string]$OutputFile,
+        
+        [string]$ConnectionString,
+        
+        [string]$ServerHost = $env:MYSQL_HOST,
+        [string]$Database = $env:MYSQL_DATABASE,
+        [string]$User = $env:MYSQL_USER,
+        [object]$Password = $env:MYSQL_PASSWORD,
+        
+        [switch]$Prod
+    )
+    
+    # Se Query parece ser um caminho de arquivo, ler o conteúdo
+    if ($Query -like "*\*" -or $Query -like "*/*" -or $Query -like "*.sql") {
+        if (Test-Path $Query) {
+            $Query = Get-Content -Path $Query -Raw -Encoding UTF8
+        } else {
+            throw "Arquivo não encontrado: $Query"
+        }
+    }
+    
+    if (-not $OutputFile) {
+        $OutputFile = "mysql_export_$(Get-Date -Format 'yyyyMMdd_HHmmss').xlsx"
+    }
+    
+    if ($Prod) {
+        $ServerHost = $env:MYSQL_PROD_HOST ?? $ServerHost
+        $Database = $env:MYSQL_PROD_DATABASE ?? $Database
+        $User = $env:MYSQL_PROD_USER ?? $User
+        $Password = $env:MYSQL_PROD_PASSWORD ?? $Password
+    }
+    
+    # Se não tiver variáveis de produção, usar as normais
+    if ($Prod -and (-not $env:MYSQL_PROD_HOST)) {
+        Write-Host "Variáveis de produção não definidas, usando variáveis normais" -ForegroundColor Yellow
+    }
+    
+    # Converter senha para string de forma segura
+    $passwordString = if ($Password -is [SecureString]) {
+        $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+        [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+    }
+    else {
+        $Password
+    }
+    
+    if (-not $ConnectionString) {
+        if (-not $ServerHost -or -not $Database -or -not $User -or -not $passwordString) {
+            throw "Credenciais incompletas. Use -ConnectionString ou defina as variáveis: MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD"
+        }
+        $ConnectionString = "Server=$ServerHost; Database=$Database; Uid=$User; Pwd=$passwordString; SslMode=Required;"
+    }
+    
+    if (-not (Get-Module -ListAvailable -Name ImportExcel)) {
+        Install-Module -Name ImportExcel -Force -Scope CurrentUser
+    }
+    
+    # Tentar carregar MySqlConnector do cache do NuGet
+    try {
+        Add-Type -AssemblyName "MySqlConnector" -ErrorAction Stop
+    }
+    catch {
+        # Se não encontrar, tentar carregar do cache global do NuGet
+        $nugetCache = "$env:USERPROFILE\.nuget\packages"
+        $mysqlConnectorPath = Get-ChildItem -Path $nugetCache -Recurse -Filter "MySqlConnector.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+        
+        if ($mysqlConnectorPath) {
+            Add-Type -Path $mysqlConnectorPath.FullName
+            Write-Host "MySqlConnector carregado do cache NuGet!" -ForegroundColor Green
+        } else {
+            throw "MySqlConnector não encontrado. Execute: dotnet add package MySqlConnector"
+        }
+    }
+    
+    $connection = $null
+    $reader = $null
+    
+    try {
+        $connection = New-Object MySqlConnector.MySqlConnection($ConnectionString)
+        $connection.Open()
+        
+        $command = New-Object MySqlConnector.MySqlCommand($Query, $connection)
+        $command.CommandTimeout = 300
+        
+        $reader = $command.ExecuteReader()
+        $dataTable = New-Object System.Data.DataTable
+        $dataTable.Load($reader)
+        
+        if ($dataTable.Rows.Count -eq 0) {
+            Write-Warning "Nenhum registro encontrado."
+            return
+        }
+        
+        $dataTable | Export-Excel -Path $OutputFile -WorksheetName "Dados" -AutoSize -AutoFilter
+        
+        Write-Host "✅ Excel salvo: $OutputFile ($($dataTable.Rows.Count) registros)" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "❌ Erro: $($_.Exception.Message)"
+    }
+    finally {
+        if ($reader) { $reader.Close() }
+        if ($connection) { $connection.Close() }
+    }
+}
+
+# Aliases para MySQL
+New-Alias -Name mysql -Value Invoke-MySqlToExcel -Force
 
 Write-Host "Custom theme loaded. Enjoy your PowerShell experience!" -ForegroundColor Green
 
